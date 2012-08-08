@@ -111,7 +111,7 @@ int ril_open(struct ril_handle *ril)
 
     if (!_ril_open_client || !_ril_close_client || !_ril_connect ||
         !_ril_is_connected || !_ril_disconnect || !_ril_set_call_volume ||
-        !_ril_set_call_audio_path || !_ril_register_unsolicited_handler) {
+        !_ril_set_call_audio_path ) {
         ALOGE("Cannot get symbols from '%s'", RIL_CLIENT_LIBPATH);
         dlclose(ril->handle);
         return -1;
@@ -125,8 +125,9 @@ int ril_open(struct ril_handle *ril)
     }
 
     /* register the wideband AMR callback */
-    _ril_register_unsolicited_handler(ril->client, RIL_UNSOL_WB_AMR_STATE,
-                                      ril_set_wb_amr_callback);
+    if (_ril_register_unsolicited_handler)
+        _ril_register_unsolicited_handler(ril->client, RIL_UNSOL_WB_AMR_STATE,
+                                          ril_set_wb_amr_callback);
 
     property_get(VOLUME_STEPS_PROPERTY, property, VOLUME_STEPS_DEFAULT);
     ril->volume_steps_max = atoi(property);
